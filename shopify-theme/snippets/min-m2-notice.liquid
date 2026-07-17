@@ -1,0 +1,30 @@
+{%- comment -%}
+  Ürün sayfasında minimum m² uyarısı + adet doğrulaması.
+  docs/metafield-kurulumu.md içinde tanımlanan custom.min_order_m2 ve custom.m2_per_unit
+  metafieldlerini okur. Metafield tanımlı değilse hiçbir şey render etmez.
+
+  Kullanım: sections/main-product.liquid içinde sepete ekle formunun hemen üstüne
+  {% render 'min-m2-notice', product: product %}
+{%- endcomment -%}
+
+{%- assign min_order_m2 = product.metafields.custom.min_order_m2.value -%}
+{%- assign m2_per_unit = product.metafields.custom.m2_per_unit.value -%}
+
+{%- if min_order_m2 and m2_per_unit and m2_per_unit > 0 -%}
+  {%- assign min_units = min_order_m2 | divided_by: m2_per_unit | ceil -%}
+  <div
+    class="min-m2-notice"
+    data-min-m2-notice
+    data-min-order-m2="{{ min_order_m2 }}"
+    data-m2-per-unit="{{ m2_per_unit }}"
+    data-min-units="{{ min_units }}"
+  >
+    <p>
+      Bu üründe minimum sipariş miktarı <strong>{{ min_order_m2 }} m²</strong>
+      ({{ min_units }} {{ product.title | escape }} birimi).
+    </p>
+    <p class="min-m2-notice__warning" data-min-m2-warning hidden>
+      Lütfen en az {{ min_units }} adet seçin ({{ min_order_m2 }} m² karşılığı).
+    </p>
+  </div>
+{%- endif -%}

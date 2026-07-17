@@ -1,0 +1,26 @@
+{%- comment -%}
+  Örnek kart görsel bloğu — mevcut ürün kartı snippet'inize (Dawn'da snippets/card-product.liquid)
+  bu yapıyı referans alarak entegre edin. Kendi temanızın responsive-image / srcset yapısını koruyun,
+  burada sade tutuldu.
+
+  Kullanım: {% render 'product-card-media', product: product %}
+{%- endcomment -%}
+
+<div class="product-card-media">
+  <img
+    src="{{ product.featured_image | image_url: width: 600 }}"
+    alt="{{ product.featured_image.alt | escape }}"
+    loading="lazy"
+    class="product-card-media__image product-card-media__image--primary"
+  >
+
+  {%- if product.images.size > 1 -%}
+    <img
+      src="{{ product.images[1] | image_url: width: 600 }}"
+      alt=""
+      aria-hidden="true"
+      loading="lazy"
+      class="product-card-media__image product-card-media__image--hover"
+    >
+  {%- endif -%}
+</div>

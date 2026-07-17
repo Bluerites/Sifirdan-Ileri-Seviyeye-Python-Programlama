@@ -1,0 +1,15 @@
+{%- comment -%}
+  Ürün sayfası ana görseli için zoom-lens sarmalayıcı.
+  Mevcut main-product galeri markup'ınızdaki ana görsel <img>'i bu div ile sarmalayın,
+  data-zoom-image olarak yüksek çözünürlüklü versiyonunu verin.
+
+  Kullanım: {% render 'product-media-zoom', image: product.featured_media.preview_image %}
+{%- endcomment -%}
+
+<div class="product-zoom" data-zoom-image="{{ image | image_url: width: 1800 }}">
+  <img
+    src="{{ image | image_url: width: 800 }}"
+    alt="{{ image.alt | escape }}"
+    class="product-card-media__image"
+  >
+</div>

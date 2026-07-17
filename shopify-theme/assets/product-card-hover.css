@@ -1,0 +1,59 @@
+/* Ürün kartı: üzerine gelince ikinci fotoğrafı gösterme + hafif büyütme (zoom-lens) */
+
+.product-card-media {
+  position: relative;
+  overflow: hidden;
+}
+
+.product-card-media__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: opacity 0.35s ease;
+}
+
+.product-card-media__image--primary {
+  position: relative;
+  z-index: 1;
+}
+
+.product-card-media__image--hover {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.product-card-media.is-hovering .product-card-media__image--hover {
+  opacity: 1;
+}
+
+/* Ürün sayfası zoom-lens: mouse pozisyonuna göre büyütülmüş görüntüyü gösterir */
+.product-zoom {
+  position: relative;
+  overflow: hidden;
+  cursor: zoom-in;
+}
+
+.product-zoom__lens {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.product-zoom.is-zooming .product-zoom__lens {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  /* Dokunmatik cihazlarda hover-swap ve zoom-lens devre dışı, sadece normal görsel görünür */
+  .product-card-media__image--hover,
+  .product-zoom__lens {
+    display: none;
+  }
+}
