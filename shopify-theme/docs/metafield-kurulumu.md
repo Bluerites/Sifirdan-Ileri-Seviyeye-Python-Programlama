@@ -1,43 +1,31 @@
-# Minimum m² Sipariş Kuralı — Metafield Kurulumu
+# Minimum m² Sipariş Kuralı — Nihai Yaklaşım: Paket Bazlı Satış
 
-## Zaten kurulmuş olan kısım
+## Karar (uygulamada test edildikten sonra)
 
-`fis8i9-fd.myshopify.com` (My Store) mağazasında aşağıdaki iki metafield tanımı API ile oluşturuldu — tekrar oluşturmaya gerek yok, doğrudan ürün düzenleme ekranında görünüyor olmalı:
+Horizon temasında (Shopify'ın Basic planında checkout/sepet seviyesinde teknik zorlama yapan bir Custom Liquid script'i) denendi, ancak Shopify bu script'i "Custom Liquid" ayarından render sırasında temizlediği için (view-source'ta script bulunamadı) çalışmadı. Bunun yerine çok daha basit ve sağlam bir çözüme karar verildi:
 
-- **Minimum Sipariş (m²)** — `custom.min_order_m2` (Decimal)
-- **Birim Başına m²** — `custom.m2_per_unit` (Decimal)
+**Ürünü zaten minimum alanı karşılayan bir "paket" (kutu/koli) olarak satın.** Örneğin mozaikte minimum 15 m² isteniyorsa, ürünü "1 paket = 15 m²" şeklinde tanımlayın; müşteri "1 adet" aldığında zaten minimumu karşılamış olur. Sepette 1 adet = minimum, hiçbir doğrulama koduna gerek kalmaz — Shopify'ın standart adet mekanizması (varsayılan min. 1) yeterli olur.
 
-Ayrıca ürüne `mozaik` veya `fayans` etiketi eklendiğinde otomatik dahil olan **"Mozaik ve Fayans"** akıllı koleksiyonu da kuruldu (handle: `mozaik-ve-fayans`).
+- Ürün açıklamasında veya kısa bir satırda "Bu paket X m² içerir" bilgisini yazın (bilgilendirme amaçlı, metafield veya düz metin — enforcement gerekmiyor).
+- `custom.m2_per_unit` metafieldi (aşağıda) bu bilgiyi yapılandırılmış şekilde tutmak isterseniz hâlâ kullanılabilir; `custom.min_order_m2` artık gerekli değil çünkü minimum, ürünün birim tanımına gömülü.
 
-## 1. Metafield tanımlarını görüntüleme/düzenleme (gerekirse)
+## Daha önce kurulmuş olan (artık opsiyonel) metafield tanımları
 
-**Admin → Settings → Custom data → Products**
+`fis8i9-fd.myshopify.com` (My Store) mağazasında aşağıdaki iki metafield tanımı API ile oluşturuldu:
 
-| Ad | Namespace & key | Tip | Açıklama |
-|---|---|---|---|
-| Minimum Sipariş (m²) | `custom.min_order_m2` | Decimal (number_decimal) | Ürünün satılabileceği minimum metrekare (örn. mozaikte `15`) |
-| Birim Başına m² | `custom.m2_per_unit` | Decimal (number_decimal) | Bir kutu/paketin kaç m² olduğu (adet → m² dönüşümü için, örn. `1.08`) |
+- **Minimum Sipariş (m²)** — `custom.min_order_m2` (Decimal) — yeni yaklaşımda kullanılmıyor, silinmesine gerek yok ama boş bırakılabilir.
+- **Birim Başına m²** — `custom.m2_per_unit` (Decimal) — paketin kaç m² olduğunu bilgilendirme amaçlı tutmak için kullanılabilir.
 
-Yalnızca m² kısıtı olan kategorilerde (mozaik, bazı fayans serileri) bu metafieldleri doldurun; boş bırakılan ürünlerde `snippets/min-m2-notice.liquid` otomatik olarak hiçbir şey göstermez ve kısıt uygulanmaz.
+Ayrıca ürüne `mozaik` veya `fayans` etiketi eklendiğinde otomatik dahil olan **"Mozaik ve Fayans"** akıllı koleksiyonu kuruldu (handle: `mozaik-ve-fayans`) — bu hâlâ geçerli ve kullanılmalı.
 
-## 2. Ürünlere değer girme
+Horizon temasına eklenen ve çalışmayan "Minimum m² uyarısı" custom-liquid bloğu temizlendi (`templates/product.json` eski haline döndürüldü).
 
-Her ürünün düzenleme sayfasında, altta **Metafields** bölümünden:
+## 1. Ürünü paket bazlı kurma
 
-- `min_order_m2`: örn. `15`
-- `m2_per_unit`: kutunun teknik özelliklerinden alınan m² değeri, örn. `1.08`
+Her mozaik/fayans ürününü, satış birimi zaten minimum alanı karşılayacak şekilde kurun:
 
-Toplu ürünlerde bu işlemi Admin'in **Bulk editor**'ünden (Products → seçili ürünler → Edit columns → metafieldleri ekle) hızlıca yapabilirsiniz.
+- Varyant/fiyat: 1 paketin fiyatı (örn. 15 m²'lik paket = X ₺).
+- Ürün başlığı veya açıklamasında paket içeriğini açıkça belirtin: "1 paket = 15 m² (14 kutu)".
+- İsterseniz `custom.m2_per_unit` metafieldine paketin toplam m²'sini yazıp ürün sayfasında görüntüleyebilirsiniz (bilgilendirme amaçlı, opsiyonel).
 
-## 3. Tema entegrasyonu
-`../README.md` içindeki "Tema dosyalarını entegre etme" adımlarını uygulayın. Özetle:
-- `snippets/min-m2-notice.liquid` ürün sayfasına eklenir, metafield değerlerini okuyup uyarı gösterir.
-- `assets/min-m2-validation.js` adet alanını minimuma kilitler, altında sipariş verilmesini engeller (istemci tarafında).
-
-## 4. Gerçek zorlama (checkout dahil) — Plus olmayan planlarda
-
-Mağazanız Shopify Plus değilse, checkout'u native olarak (Shopify Functions ile) özelleştiremezsiniz. Tema/JS katmanı kullanıcı arayüzünde etkilidir ama teknik olarak atlatılabilir (örn. API ile doğrudan sepete ekleme). Tam garanti için:
-
-1. Shopify App Store'da **"Minimum & Maximum Quantity"**, **"Order Limit Quantity"** gibi anahtar kelimelerle arama yapın (örn. Bold, Zoorix, Klatch gibi sağlayıcıların "min/max quantity" uygulamaları). Bu uygulamalar günümüzde Cart & Checkout Validation Functions API'sini kullanır ve Plus olmayan planlarda da çalışacak şekilde sunulur — kurulum öncesi uygulamanın "Works with: your plan" bilgisini kontrol edin.
-2. Uygulama kuralını, bu dokümandaki `custom.min_order_m2` / `custom.m2_per_unit` metafieldlerine referans verecek şekilde (çoğu app kendi kural tablosunu tutar, metafield senkronizasyonu destekleyip desteklemediğini kontrol edin) veya doğrudan ürün/koleksiyon bazında manuel kural girerek eşleştirin.
-3. Alternatif: Satış birimini doğrudan "kutu" değil "m²" olacak şekilde varyantlaştırıp, varyant başına minimum adet kısıtını Shopify'ın yerleşik **"Minimum requirement"** (sipariş bazlı) özelliğiyle kısmen destekleyebilirsiniz, ancak bu ürün bazında değil sepet toplamı bazında çalışır — mozaik özelinde ürün bazlı kural için yukarıdaki app yaklaşımı gereklidir.
+Bu şekilde Shopify'ın varsayılan adet mekanizması (min. 1) zaten iş kuralını karşılar; ek doğrulama koduna veya app'e gerek kalmaz.
