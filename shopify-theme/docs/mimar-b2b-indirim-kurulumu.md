@@ -2,6 +2,16 @@
 
 Seçilen yaklaşım: **özel başvuru formu + manuel onay** (native Shopify B2B company-account özelliği Plus'a özeldir, bu yüzden tag tabanlı bir süreç kullanılıyor).
 
+## Mağazada zaten kurulmuş olan kısım
+
+Aşağıdakiler `fis8i9-fd.myshopify.com` (My Store) mağazasında API ile canlı olarak oluşturuldu, tekrar yapılmasına gerek yok:
+
+- **Müşteri segmenti**: "Mimarlar (Onaylı B2B)" (`customer_tags CONTAINS 'architect'`) — `architect` etiketi eklenen her müşteri otomatik bu segmente girer.
+- **Otomatik indirim**: "Mimar B2B İndirimi - Mozaik ve Fayans" — %15, kod girmeye gerek yok, yalnızca "Mimarlar (Onaylı B2B)" segmentindeki müşterilere ve yalnızca "Mozaik ve Fayans" koleksiyonundaki ürünlere uygulanıyor. Durum: **ACTIVE**.
+- **Koleksiyon**: "Mozaik ve Fayans" (akıllı koleksiyon, handle: `mozaik-ve-fayans`) — ürüne `mozaik` veya `fayans` etiketi eklendiğinde otomatik bu koleksiyona dahil olur.
+
+Geriye kalan tek manuel adım: bir mimar başvurusu onaylandığında o müşteriye Admin'den `architect` etiketini eklemek. Bunun ötesinde indirim otomatik devreye girer.
+
 ## 1. Başvuru formu
 
 **Admin → Online Store → Pages → Add page** ile "Mimar / Profesyonel Üyelik Başvurusu" sayfası oluşturun. Formu şu yollardan biriyle ekleyin:
@@ -19,24 +29,10 @@ Form alanları önerisi: Ad Soyad, Firma/Ofis Adı, Vergi No, Telefon, Web sites
 
 Bu adım otomatik değildir — istenen yaklaşım bu şekildeydi (kayıt formu + manuel onay).
 
-## 3. Müşteri segmenti oluşturma
+## 3. Müşteri segmenti ve otomatik indirim (kuruldu)
 
-**Admin → Customers → Segments → Create segment**, filtre: `customer_tags CONTAINS 'architect'`. Bu segment, sonraki adımdaki otomatik indirimin hedef kitlesi olacak.
+Yukarıda "Mağazada zaten kurulmuş olan kısım" bölümünde açıklandığı gibi segment ve otomatik indirim zaten aktif. Yeni bir kategori (örn. seramik) için de mimar indirimi istenirse, o kategori ürünlerine `mozaik` veya `fayans` etiketi eklemek yeterli — koleksiyon ve indirim otomatik kapsar. Farklı bir indirim oranı/kapsamı gerekirse **Admin → Discounts** üzerinden mevcut "Mimar B2B İndirimi - Mozaik ve Fayans" kuralı düzenlenebilir.
 
-## 4. Otomatik indirim kurulumu
+## 4. Yeni bir mimar onaylandığında yapılacak tek adım
 
-**Admin → Discounts → Create discount → Automatic discount**:
-
-1. İndirim tipi: **Percentage** (örn. %15, mimarlar için belirlenen oran).
-2. Uygulama kapsamı: Mozaik/tile koleksiyonu (veya tüm ürünler — mağaza politikasına göre).
-3. **Eligibility → Specific customer segments** seçilip yukarıda oluşturulan `architect` segmenti seçilir.
-4. İndirim, `architect` tag'li ve giriş yapmış müşterilerde hem koleksiyon/ürün sayfasında hem sepette/checkout'ta otomatik yansır — ekstra kod gerekmez, Shopify bunu native destekler.
-
-## 5. API ile otomatikleştirme (onay verildiğinde)
-
-Bu adımlar Shopify Admin GraphQL API üzerinden de kurulabilir:
-- `customerSegmentCreate` — tag bazlı segment tanımı
-- `discountAutomaticBasicCreate` — segment hedefli otomatik yüzde indirimi
-- `customerUpdate` (tags alanı) — onaylanan müşteriye `architect` tag'i eklemek için
-
-Bu depodan Shopify mağazasına canlı bağlantı şu an onaylı olmadığından bu mutation'lar burada çalıştırılamadı; onay verildiğinde aynı MCP araçlarıyla (graphql_schema → graphql_mutation) uygulanabilir.
+**Admin → Customers** → ilgili müşteri → **Tags** alanına `architect` yazıp kaydedin. Müşteri bir sonraki girişinde Mozaik ve Fayans koleksiyonundaki ürünlerde otomatik %15 indirimli fiyat görür.

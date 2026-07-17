@@ -2,13 +2,9 @@
 
 Shopify Markets, Plus dahil tüm planlarda kullanılabilir ve çok kur/çok ülke satışının standart yoludur. Kod gerektirmez, aşağıdaki adımlar Shopify Admin üzerinden yapılır.
 
-## 1. Mevcut durum (Türkiye)
-Mağaza muhtemelen zaten varsayılan bir market ile geliyor. Bunu "Türkiye" marketi olarak düzenleyin:
+## 1. Mevcut durum (Türkiye) — doğrulandı
 
-1. **Admin → Settings → Markets**
-2. Varsayılan market'i açın, ülke olarak yalnızca **Türkiye** kalacak şekilde düzenleyin.
-3. Para birimi: **TRY** (Türk Lirası).
-4. Fiyatlandırma: Ürün fiyatlarınızı zaten TRY üzerinden girdiğiniz için ek bir işlem gerekmez.
+`fis8i9-fd.myshopify.com` (My Store, Basic plan) mağazasında birincil (primary) market zaten **"Türkiye"** (handle: `tr`, bölge: TR, para birimi: TRY) olarak kurulu ve aktif durumda. Bu adım için ek bir işlem gerekmiyor.
 
 ## 2. Avrupa marketi ekleme (ileride aktifleştirmek üzere şimdiden hazırlayın)
 

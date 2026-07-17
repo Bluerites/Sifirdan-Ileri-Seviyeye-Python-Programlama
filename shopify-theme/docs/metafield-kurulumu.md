@@ -1,8 +1,17 @@
 # Minimum m² Sipariş Kuralı — Metafield Kurulumu
 
-## 1. Metafield tanımlarını oluşturma
+## Zaten kurulmuş olan kısım
 
-**Admin → Settings → Custom data → Products → Add definition**
+`fis8i9-fd.myshopify.com` (My Store) mağazasında aşağıdaki iki metafield tanımı API ile oluşturuldu — tekrar oluşturmaya gerek yok, doğrudan ürün düzenleme ekranında görünüyor olmalı:
+
+- **Minimum Sipariş (m²)** — `custom.min_order_m2` (Decimal)
+- **Birim Başına m²** — `custom.m2_per_unit` (Decimal)
+
+Ayrıca ürüne `mozaik` veya `fayans` etiketi eklendiğinde otomatik dahil olan **"Mozaik ve Fayans"** akıllı koleksiyonu da kuruldu (handle: `mozaik-ve-fayans`).
+
+## 1. Metafield tanımlarını görüntüleme/düzenleme (gerekirse)
+
+**Admin → Settings → Custom data → Products**
 
 | Ad | Namespace & key | Tip | Açıklama |
 |---|---|---|---|
